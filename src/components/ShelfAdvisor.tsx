@@ -5,9 +5,11 @@ import { DEFAULT_MODEL, MAX_COMPARE_MODELS, MODELS } from "@/config/models";
 import { useCooldown, useElapsedSeconds } from "@/hooks/timers";
 import { modelLabel } from "@/lib/format";
 import type { RecommendRequest, RecommendResponse, RunResult } from "@/lib/types";
+import type { UsageRecord } from "@/lib/usage";
 import { BookListInput } from "./BookListInput";
 import { ModelPicker, type Mode } from "./ModelPicker";
 import { ResultCard } from "./ResultCard";
+import { UsagePanel } from "./UsagePanel";
 
 const MIN_LOVED = 3;
 const MAX_BOOKS = 5;
@@ -25,6 +27,8 @@ export function ShelfAdvisor() {
   const [singleModel, setSingleModel] = useState(DEFAULT_MODEL);
   const [compareModels, setCompareModels] = useState<string[]>(MODELS.slice(0, 2).map((m) => m.id));
   const [slots, setSlots] = useState<Slot[]>([]);
+  /** Every completed call this session, for the usage panel (memory only, no DB in v1) */
+  const [records, setRecords] = useState<UsageRecord[]>([]);
   /** Blocks submits after a 429 until OpenRouter says it's OK */
   const cooldown = useCooldown();
   const abortRef = useRef<AbortController | null>(null);
@@ -59,6 +63,7 @@ export function ShelfAdvisor() {
       const { results }: RecommendResponse = await res.json();
       const result = results[0];
       updateSlot({ model, state: "done", result });
+      setRecords((prev) => [...prev, { id: crypto.randomUUID(), at: Date.now(), result }]);
 
       if (!result.ok && result.error.kind === "rate_limited") {
         cooldown.start(result.error.retryAfterSec ?? 30);
@@ -162,6 +167,8 @@ export function ShelfAdvisor() {
           ))}
         </section>
       )}
+
+      {records.length > 0 && <UsagePanel records={records} onClear={() => setRecords([])} />}
     </div>
   );
 }

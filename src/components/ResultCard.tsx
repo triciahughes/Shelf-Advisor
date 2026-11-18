@@ -1,16 +1,5 @@
-import type { ErrorKind, RunResult, Usage } from "@/lib/types";
-import { formatMs, formatTokens, formatUsd, modelLabel } from "@/lib/format";
-
-const ERROR_TITLES: Record<ErrorKind, string> = {
-  rate_limited: "Rate limited",
-  insufficient_credits: "Out of credits",
-  bad_request: "Request rejected",
-  auth: "Server misconfigured",
-  timeout: "Timed out",
-  upstream: "Models unavailable",
-  truncated: "Answer cut off",
-  invalid_output: "Unusable answer",
-};
+import type { RunResult, Usage } from "@/lib/types";
+import { errorTitle, formatMs, formatTokens, formatUsd, modelLabel } from "@/lib/format";
 
 export function ResultCard({ result }: { result: RunResult }) {
   // Label the card with whoever actually answered, when we know.
@@ -44,7 +33,7 @@ export function ResultCard({ result }: { result: RunResult }) {
         </ol>
       ) : (
         <div role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-900 dark:bg-red-950/40 dark:text-red-200">
-          <p className="font-medium">{ERROR_TITLES[result.error.kind]}</p>
+          <p className="font-medium">{errorTitle(result.error.kind)}</p>
           <p className="mt-0.5">{result.error.message}</p>
         </div>
       )}

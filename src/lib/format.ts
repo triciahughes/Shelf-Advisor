@@ -1,4 +1,5 @@
 import { FALLBACK_MODELS, MODELS } from "@/config/models";
+import type { ErrorKind } from "./types";
 
 const stripFree = (slug: string) => slug.replace(/:free$/, "");
 
@@ -26,4 +27,19 @@ export function formatMs(ms: number): string {
 
 export function formatTokens(n: number): string {
   return n.toLocaleString("en-US");
+}
+
+const ERROR_TITLES: Record<ErrorKind, string> = {
+  rate_limited: "Rate limited",
+  insufficient_credits: "Out of credits",
+  bad_request: "Request rejected",
+  auth: "Server misconfigured",
+  timeout: "Timed out",
+  upstream: "Models unavailable",
+  truncated: "Answer cut off",
+  invalid_output: "Unusable answer",
+};
+
+export function errorTitle(kind: ErrorKind): string {
+  return ERROR_TITLES[kind];
 }
