@@ -42,7 +42,17 @@ export const MAX_COMPARE_MODELS = 3;
 /** Generation settings shared by every request, for a fair comparison. */
 export const GENERATION = {
   temperature: 0.7,
-  maxTokens: 800,
+  /**
+   * Covers reasoning AND the visible answer: on most providers, thinking
+   * tokens count against this limit. 800 was too low for reasoning models.
+   */
+  maxTokens: 4000,
+  /**
+   * OpenRouter's unified `reasoning` control. "low" keeps reasoning models
+   * from spending the whole budget thinking. Non-reasoning models ignore it.
+   * Options: "none" | "minimal" | "low" | "medium" | "high"
+   */
+  reasoningEffort: "low",
 } as const;
 
 /**

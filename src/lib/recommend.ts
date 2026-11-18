@@ -7,8 +7,11 @@ import { getOpenRouter } from "./openrouter";
 import { buildMessages, parseRecommendations } from "./prompt";
 import type { RunError, RunResult, Usage } from "./types";
 
-/** OpenRouter-only request field the OpenAI SDK types don't know about. */
-type OpenRouterParams = ChatCompletionCreateParamsNonStreaming & { models?: string[] };
+/** OpenRouter-only request fields the OpenAI SDK types don't know about. */
+type OpenRouterParams = ChatCompletionCreateParamsNonStreaming & {
+  models?: string[];
+  reasoning?: { effort?: string; exclude?: boolean };
+};
 
 /** OpenRouter adds `cost` to usage, and can put an `error` in a 200 body. */
 type OpenRouterCompletion = ChatCompletion & {
@@ -30,6 +33,9 @@ export async function runModel(
     messages: buildMessages(loved, disliked),
     temperature: GENERATION.temperature,
     max_tokens: GENERATION.maxTokens,
+    // exclude: we don't display reasoning, so don't send it over the wire.
+    // It's still generated and billed, and shows up in reasoning_tokens.
+    reasoning: { effort: GENERATION.reasoningEffort, exclude: true },
   };
 
   let completion: OpenRouterCompletion;
@@ -52,8 +58,22 @@ export async function runModel(
 
   const respondedModel = completion.model;
   const usage = toUsage(completion.usage);
-  const content = completion.choices?.[0]?.message?.content ?? "";
-  const recommendations = parseRecommendations(content);
+  const choice = completion.choices?.[0];
+  const recommendations = parseRecommendations(choice?.message?.content ?? "");
+
+  if (!recommendations && choice?.finish_reason === "length") {
+    return {
+      ok: false,
+      requestedModel,
+      latencyMs,
+      respondedModel,
+      usage,
+      error: {
+        kind: "truncated",
+        message: `The model hit the ${GENERATION.maxTokens}-token limit before finishing (${usage.reasoningTokens} spent reasoning).`,
+      },
+    };
+  }
 
   if (!recommendations) {
     return {
@@ -89,6 +109,7 @@ function toUsage(u: OpenRouterCompletion["usage"]): Usage {
   return {
     promptTokens: u?.prompt_tokens ?? 0,
     completionTokens: u?.completion_tokens ?? 0,
+    reasoningTokens: u?.completion_tokens_details?.reasoning_tokens ?? 0,
     totalTokens: u?.total_tokens ?? 0,
     costUsd: typeof u?.cost === "number" ? u.cost : null,
   };

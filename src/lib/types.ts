@@ -12,6 +12,8 @@ export type Recommendation = {
 export type Usage = {
   promptTokens: number;
   completionTokens: number;
+  /** Part of completionTokens spent thinking (billed, but never shown) */
+  reasoningTokens: number;
   totalTokens: number;
   /** OpenRouter `usage.cost` (credits, 1 credit = $1). null if not returned. */
   costUsd: number | null;
@@ -24,6 +26,7 @@ export type ErrorKind =
   | "auth" // 401/403: key missing or invalid (a config problem)
   | "timeout"
   | "upstream" // 5xx or a provider error, after fallbacks were exhausted
+  | "truncated" // hit the max_tokens limit before finishing
   | "invalid_output"; // model answered, but not in the shape we asked for
 
 export type RunError = {
