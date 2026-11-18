@@ -7,10 +7,12 @@ import "server-only";
  * client code. Never give the key that prefix.)
  */
 
+export class MissingEnvError extends Error {}
+
 function required(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new Error(
+    throw new MissingEnvError(
       `Missing env var ${name}. Copy .env.example to .env.local and fill it in.`,
     );
   }

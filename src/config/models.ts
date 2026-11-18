@@ -45,7 +45,12 @@ export const GENERATION = {
   maxTokens: 800,
 } as const;
 
-/** Builds the ordered `models` list for one request: primary first, no duplicates. */
-export function buildModelChain(primary: string): string[] {
-  return [primary, ...FALLBACK_MODELS.filter((m) => m !== primary)];
+/**
+ * Fallbacks for one request, excluding the primary. With the OpenAI SDK,
+ * OpenRouter tries `model` first, then the `models` array in order.
+ */
+export function fallbacksFor(primary: string): string[] {
+  return FALLBACK_MODELS.filter((m) => m !== primary);
 }
+
+export const ALLOWED_MODEL_IDS = new Set(MODELS.map((m) => m.id));
