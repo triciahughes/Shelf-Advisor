@@ -137,7 +137,7 @@ function toRunError(err: unknown): RunError {
 function fromStatus(status: number | undefined, message?: string): RunError {
   switch (status) {
     case 429:
-      return { kind: "rate_limited", message: "Rate limited. Free models allow 20 requests per minute and a daily cap." };
+      return { kind: "rate_limited", message: "Free models allow 20 requests per minute, plus a daily cap." };
     case 402:
       return { kind: "insufficient_credits", message: "OpenRouter account has insufficient credits." };
     case 400:

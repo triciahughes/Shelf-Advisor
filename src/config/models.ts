@@ -29,9 +29,9 @@ export const MODELS: ModelOption[] = [
  * server-side through the `models` array (on errors like rate limits,
  * downtime, or moderation), so it's one HTTP request from our side.
  */
-export const FALLBACK_MODELS: string[] = [
-  "google/gemma-4-26b-a4b-it:free",
-  "nvidia/nemotron-3.5-lightning:free",
+export const FALLBACK_MODELS: ModelOption[] = [
+  { id: "google/gemma-4-26b-a4b-it:free", label: "Gemma 4 26B" },
+  { id: "nvidia/nemotron-3.5-lightning:free", label: "Nemotron 3.5 Lightning" },
 ];
 
 export const DEFAULT_MODEL = MODELS[0].id;
@@ -60,7 +60,7 @@ export const GENERATION = {
  * OpenRouter tries `model` first, then the `models` array in order.
  */
 export function fallbacksFor(primary: string): string[] {
-  return FALLBACK_MODELS.filter((m) => m !== primary);
+  return FALLBACK_MODELS.map((m) => m.id).filter((id) => id !== primary);
 }
 
 export const ALLOWED_MODEL_IDS = new Set(MODELS.map((m) => m.id));
