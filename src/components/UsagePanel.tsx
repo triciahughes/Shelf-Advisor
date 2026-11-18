@@ -85,7 +85,7 @@ export function UsagePanel({ records, onClear }: Props) {
           new Date(at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" }),
           <div key={id}>
             <ModelCell slug={servedModel(r)} />
-            {r.ok && r.usedFallback && (
+            {r.usedFallback && (
               <span className="block text-xs text-amber-700 dark:text-amber-300">fallback for {modelLabel(r.requestedModel)}</span>
             )}
           </div>,

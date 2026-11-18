@@ -52,10 +52,10 @@ export function summarize(records: UsageRecord[]): UsageTotals {
     if (result.ok) {
       t.succeeded++;
       latencySum += result.latencyMs;
-      if (result.usedFallback) t.fallbacks++;
     } else {
       t.failed++;
     }
+    if (result.usedFallback) t.fallbacks++;
 
     // Failed calls can still have usage (e.g. truncated or unparseable output).
     const u = result.usage;

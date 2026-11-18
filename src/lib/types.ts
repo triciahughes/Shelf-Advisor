@@ -41,13 +41,17 @@ type RunBase = {
   requestedModel: string;
   /** Wall-clock time for the OpenRouter call, measured on our server */
   latencyMs: number;
+  /**
+   * True when a different model than the one picked answered, on success OR
+   * failure (e.g. the pick was rate limited and the fallback ran out of tokens).
+   */
+  usedFallback: boolean;
 };
 
 export type RunSuccess = RunBase & {
   ok: true;
   /** OpenRouter's `model` field: the model that actually answered */
   respondedModel: string;
-  usedFallback: boolean;
   recommendations: Recommendation[];
   usage: Usage;
 };

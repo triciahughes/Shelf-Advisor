@@ -42,7 +42,7 @@ export async function runModel(
   try {
     completion = (await getOpenRouter().chat.completions.create(params)) as OpenRouterCompletion;
   } catch (err) {
-    return { ok: false, requestedModel, latencyMs: elapsed(), error: toRunError(err) };
+    return { ok: false, requestedModel, latencyMs: elapsed(), usedFallback: false, error: toRunError(err) };
   }
   const latencyMs = elapsed();
 
@@ -52,11 +52,13 @@ export async function runModel(
       ok: false,
       requestedModel,
       latencyMs,
+      usedFallback: false,
       error: fromStatus(completion.error.code, completion.error.message),
     };
   }
 
   const respondedModel = completion.model;
+  const usedFallback = baseSlug(respondedModel) !== baseSlug(requestedModel);
   const usage = toUsage(completion.usage);
   const choice = completion.choices?.[0];
   const recommendations = parseRecommendations(choice?.message?.content ?? "");
@@ -67,6 +69,7 @@ export async function runModel(
       requestedModel,
       latencyMs,
       respondedModel,
+      usedFallback,
       usage,
       error: {
         kind: "truncated",
@@ -81,6 +84,7 @@ export async function runModel(
       requestedModel,
       latencyMs,
       respondedModel,
+      usedFallback,
       usage,
       error: {
         kind: "invalid_output",
@@ -93,7 +97,7 @@ export async function runModel(
     ok: true,
     requestedModel,
     respondedModel,
-    usedFallback: baseSlug(respondedModel) !== baseSlug(requestedModel),
+    usedFallback,
     recommendations,
     usage,
     latencyMs,

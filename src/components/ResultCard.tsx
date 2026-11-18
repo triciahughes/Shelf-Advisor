@@ -2,19 +2,18 @@ import type { RunResult, Usage } from "@/lib/types";
 import { errorTitle, formatMs, formatTokens, formatUsd, modelLabel } from "@/lib/format";
 
 export function ResultCard({ result }: { result: RunResult }) {
-  // Label the card with whoever actually answered, when we know.
-  const shownModel = result.respondedModel ?? result.requestedModel;
-
+  // The card is the user's pick (it's their compare column). If another model
+  // answered, say so, whether that answer succeeded or failed.
   return (
     <article className="rounded-lg border border-neutral-200 p-5 dark:border-neutral-800">
       <header className="mb-4 flex flex-wrap items-center gap-2">
-        <h3 className="font-medium">{modelLabel(shownModel)}</h3>
-        {result.ok && result.usedFallback && (
+        <h3 className="font-medium">{modelLabel(result.requestedModel)}</h3>
+        {result.usedFallback && result.respondedModel && (
           <span
             className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
-            title={`You picked ${result.requestedModel}; OpenRouter fell back to ${result.respondedModel}.`}
+            title={`You picked ${result.requestedModel}; it failed, so OpenRouter fell back to ${result.respondedModel}.`}
           >
-            Fallback · requested {modelLabel(result.requestedModel)}
+            Fallback · answered by {modelLabel(result.respondedModel)}
           </span>
         )}
       </header>
