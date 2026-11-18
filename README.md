@@ -82,7 +82,7 @@ Import the repo into Vercel and set `OPENROUTER_API_KEY`, plus `SITE_URL` with t
 
 ## What I learned comparing models
 
-Nemotron 3 Ultra seems to be the most consistent of the 3 when it comes to token usage and being able to give an output. Gemma 4 31B comes in second and I did notice that it recommended the same book between sessions. To be fair I was mostly rotating the books I like the most so I'm not sure if I see that persistence as a downfall. Lastly, Nemotron 3.5 Lightning, often hit tokens usage limits. In fact out of several runs, I was only able to get 2 outputs from this model. However, considering that all three models are free, I'm not sure if there's much room for complaint other than for Nemotron 3.5 Lightning. 
+I compared three free models. Nemotron 3 Ultra was the most consistent, both in token usage and in reliably returning a result. Gemma 4 31B came second. It recommended the same book across sessions, but I was mostly rotating my same favorite books as input, so I’m not sure that consistency is a flaw. Nemotron 3.5 Lightning often hit token usage limits and only returned output twice across several runs. Since all three are free, Lightning is the only one I’d really fault.
 
 ## Possible next steps
 
