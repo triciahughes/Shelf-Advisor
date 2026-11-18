@@ -6,13 +6,9 @@ AI book recommendations, compared across models, with token, cost, and latency v
 
 Built on the [OpenRouter](https://openrouter.ai) API with Next.js and TypeScript.
 
-<!-- Screenshots: add images to docs/screenshots/ and uncomment.
 ![Single mode results](docs/screenshots/single.png)
 ![Compare mode](docs/screenshots/compare.png)
 ![Session usage panel](docs/screenshots/usage.png)
--->
-
-> _Screenshots coming soon._
 
 ## What it does
 
